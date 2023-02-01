@@ -98,7 +98,7 @@ class NeuralNet(nn.Module):
         return x
 
 # 모델생성
-net= NeuralNet()
+net= NeuralNet().cuda(device)
 
 criterion=nn.CrossEntropyLoss().cuda()
 # optimizer= optim.SGD(net.parameters(),lr=0.001,momentum=0.9)
@@ -113,8 +113,8 @@ for epoch in range(1,700+1):
     # i=0
     for data in train_loader:
         inputs,labels=data
-        labels=labels
-        inputs=inputs
+        labels=labels.to(device)
+        inputs=inputs.to(device)
         optimizer.zero_grad()
         outputs=net(inputs)
         loss=criterion(outputs.squeeze(),labels.squeeze())
