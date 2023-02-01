@@ -106,15 +106,17 @@ for epoch in range(1,700+1):
     correct=0
     total=0
     running_loss=0.0
-    # i=0
     for data in train_loader:
         inputs,labels=data
         labels=labels.to(device)
         inputs=inputs.to(device)
+        # zero_grad 중복계산을 막기위해 0으로 명시적으로 재설정
         optimizer.zero_grad()
         outputs=net(inputs)
         # labels=labels.long()ArithmeticError
         loss=criterion(outputs.squeeze(),labels.squeeze())
+        # loss.backwards() 호출하여 예측 손실(prediction loss)을 역전파
+        # optimizer.step()을 호출하여 역전파 단계에서 수집된 변화도로 매개변수를 조정
         loss.backward()
         optimizer.step()
         _,predicted=torch.max(outputs.data,1)
@@ -125,7 +127,7 @@ for epoch in range(1,700+1):
     if epoch%10==0:
         print(f'----- Epoch {epoch} -----')
         print("acuuracy:",100*correct/total)
-        print("loss:",running_loss/n)       
+        print("loss:",running_loss/n)            
         
 print("finished learning")
 PATH="C:/Users/wnsgm/Desktop/sEMG_final/weight/mav_700.pth"
