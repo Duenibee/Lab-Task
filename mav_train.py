@@ -27,18 +27,12 @@ mav,var,wl= sEMG().statics_all(segement1,index)
 train_mav,train_var,train_wl,test_mav,test_var,test_wl=sEMG().trian_test_set(mav, var, wl)
 # label 만들기
 label_train_mav,label_test_mav=sEMG().make_label(train_mav, test_mav)
-label_train_var,label_test_var=sEMG().make_label(train_var, test_var)
-label_train_wl,label_test_wl=sEMG().make_label(train_wl, test_wl)
 
 # trian,test 데이터 분류
 train_set_mav,test_set_mav,label_train_mav,label_test_mav=sEMG().real_dataset(train_mav,test_mav,label_train_mav,label_test_mav)
-train_set_var,test_set_var,label_train_var,label_test_var=sEMG().real_dataset(train_var,test_var,label_train_var,label_test_var)
-train_set_wl,test_set_wl,label_train_wl,label_test_wl=sEMG().real_dataset(train_wl,test_wl,label_train_wl,label_test_wl)
 
 # valid_data load
 valid_mav,valid_mav_label,test_set_mav,label_test_mav=sEMG().validtaion_dataset(test_set_mav, label_test_mav)
-valid_var,valid_var_label,test_set_var,label_test_var=sEMG().validtaion_dataset(test_set_var, label_test_var)
-valid_wl,valid_wl_label,test_set_wl,label_test_wl=sEMG().validtaion_dataset(test_set_wl, label_test_wl)
 
 # data tensor로 불러오기
 class CustomDataset(Dataset): 
