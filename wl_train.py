@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader, Dataset
 from torch import nn
 import random
 
-#gpu설정
+# gpu설정
 USE_CUDA=torch.cuda.is_available()
 device=torch.device("cuda" if USE_CUDA else 'cpu')
 print("다음 기기로 학습합니다.", device)
@@ -24,7 +24,7 @@ segement1,index=sEMG().segmentation(x)
 # mav , var ,wl
 mav,var,wl= sEMG().statics_all(segement1,index)
 
-## statics로 train, test set 분류하기
+# statics로 train, test set 분류하기
 train_mav,train_var,train_wl,test_mav,test_var,test_wl=sEMG().trian_test_set(mav, var, wl)
 
 # label 만들기
@@ -105,7 +105,7 @@ optimizer = torch.optim.Adam(net.parameters(), lr=0.001)
 total_batch=len(train_loader)
 n=len(train_loader)
 loss_=[]
-for epoch in range(1,600+1): # 600, 300
+for epoch in range(1, 700+1):
     correct=0
     total=0
     running_loss=0.0
