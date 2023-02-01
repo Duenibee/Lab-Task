@@ -8,6 +8,3 @@ sEMG_data.py            --> sEMG data를 load, 전처리 하는 클래스를 담
 (mav, var, wl)_train.py --> 각각의 데이터를 train
 
 test.py                 --> test 
- 
-valid.py                --> valid
-
