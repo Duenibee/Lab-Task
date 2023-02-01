@@ -59,7 +59,7 @@ validsets =CustomDataset(valid_var,valid_var_label)
 valid_loader= DataLoader(validsets, batch_size=1, shuffle=False)
 
 def saveModel(): 
-    path = "./pause_mav_model.pth" 
+    path = "./pause_var_model.pth" 
     torch.save(net.state_dict(), path) 
     
 # 학습 모델
