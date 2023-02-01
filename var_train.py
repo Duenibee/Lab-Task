@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jan  6 21:57:19 2023
-
-@author: wnsgm
-"""
 from sEMG_data import sEMG_data_load as sEMG
 from matplotlib import pyplot as plt
 import torch
@@ -31,14 +25,13 @@ mav,var,wl= sEMG().statics_all(segement1,index)
 # statics로 train, test set 분류하기
 train_mav,train_var,train_wl,test_mav,test_var,test_wl=sEMG().trian_test_set(mav, var, wl)
 # label 만들기
-label_train_mav,label_test_mav=sEMG().make_label(train_mav, test_mav)
 label_train_var,label_test_var=sEMG().make_label(train_var, test_var)
-label_train_wl,label_test_wl=sEMG().make_label(train_wl, test_wl)
-# trian,test 데이터 분류
-train_set_mav,test_set_mav,label_train_mav,label_test_mav=sEMG().real_dataset(train_mav,test_mav,label_train_mav,label_test_mav)
-train_set_var,test_set_var,label_train_var,label_test_var=sEMG().real_dataset(train_var,test_var,label_train_var,label_test_var)
-train_set_wl,test_set_wl,label_train_wl,label_test_wl=sEMG().real_dataset(train_wl,test_wl,label_train_wl,label_test_wl)
 
+# trian,test 데이터 분류
+train_set_var,test_set_var,label_train_var,label_test_var=sEMG().real_dataset(train_var,test_var,label_train_var,label_test_var)
+
+# valid_data load
+valid_var,valid_var_label,test_set_var,label_test_var=sEMG().validtaion_dataset(test_set_var, label_test_var)
 
 # data tensor로 불러오기
 class CustomDataset(Dataset): 
@@ -59,9 +52,16 @@ class CustomDataset(Dataset):
     return x, y
 # 데이터 불러오기
 trainsets =CustomDataset(train_set_var,label_train_var)
-train_loader= DataLoader(trainsets, batch_size=5, shuffle=True)
+train_loader= DataLoader(trainsets, batch_size=10, shuffle=True)
 
+# valid 데이터 불러오기
+validsets =CustomDataset(valid_var,valid_var_label)
+valid_loader= DataLoader(validsets, batch_size=1, shuffle=False)
 
+def saveModel(): 
+    path = "./pause_mav_model.pth" 
+    torch.save(net.state_dict(), path) 
+    
 # 학습 모델
 class NeuralNet(nn.Module):
     def __init__(self):
@@ -75,38 +75,40 @@ class NeuralNet(nn.Module):
         self.layer_3 = nn.Linear(128, 64, bias=True)
         self.layer_out = nn.Linear(64, 17, bias=True)
         self.dropout = nn.Dropout(0.2)
-        self.relu = nn.ReLU()
         self.tanh=nn.Tanh()
         
     def forward(self, x):
         x = self.layer_1(x)
-        x = self.tanh(x)
         x= self.bn1(x)
+        x = self.tanh(x)
+        
         
         x = self.layer_2(x)
-        x = self.tanh(x)
-        x = self.dropout(x)
         x= self.bn2(x)
+        x = self.tanh(x)
+        # x = self.dropout(x)
         
         x = self.layer_3(x)
-        x = self.tanh(x)
-        x = self.dropout(x)
         x= self.bn3(x)
+        x = self.tanh(x)
+        # x = self.dropout(x)
 
         x = self.layer_out(x)
         
         return x
-
+    
 # 모델생성
 net= NeuralNet().to(device)
-
 criterion=nn.CrossEntropyLoss().cuda()
 #optimizer= optim.SGD(net.parameters(),lr=0.001,momentum=0.9)
 optimizer = torch.optim.Adam(net.parameters(), lr=0.001)
 n=len(train_loader)
-net.train()
+n_val=len(valid_loader)
+best_accuracy=98
 loss_=[]
+val_loss_list=[]
 for epoch in range(1,700+1):
+    net.train()
     correct=0
     total=0
     running_loss=0.0
@@ -117,29 +119,53 @@ for epoch in range(1,700+1):
         # zero_grad 중복계산을 막기위해 0으로 명시적으로 재설정
         optimizer.zero_grad()
         outputs=net(inputs)
-        # labels=labels.long()ArithmeticError
         loss=criterion(outputs.squeeze(),labels.squeeze())
         # loss.backwards() 호출하여 예측 손실(prediction loss)을 역전파
         # optimizer.step()을 호출하여 역전파 단계에서 수집된 변화도로 매개변수를 조정
         loss.backward()
         optimizer.step()
         _,predicted=torch.max(outputs.data,1)
-        total+=labels.size(0)
+        total+=outputs.size(0)
         correct+=(predicted==labels).sum().item()
         running_loss+=loss.item()
     loss_.append(running_loss/n)  
+    
+    # validation
+    with torch.no_grad():
+        net.eval()
+        val_epoch_loss = 0
+        val_correct=0
+        val_total=0
+        for data in valid_loader:
+            inputs_val,labels_val=data
+            labels_val=labels_val.to(device)
+            inputs_val=inputs_val.to(device)
+            outputs_val=net(inputs_val)
+            val_loss = criterion(outputs_val.squeeze(), labels_val.squeeze())
+            _,predicted_val=torch.max(outputs_val.data,1)
+            val_total+=outputs_val.size(0)
+            val_correct+=(predicted_val==labels_val).sum().item()
+            val_epoch_loss+=val_loss.item()
+    if 100*correct/total > best_accuracy: 
+        saveModel() 
+        best_accuracy = 100*correct/total
+        print("stop training early")
+        break
     if epoch%10==0:
-        print(f'----- Epoch {epoch} -----')
-        print("acuuracy:",100*correct/total)
-        print("loss:",running_loss/n)  
-        
+        print("\n")
+        print(f'--------- Epoch {epoch} ----------')
+        print("train_acuuracy:",100*correct/total)
+        print("train_loss:",running_loss/n)       
+        print("---------------------------")
+        print("valid_acuuracy:",100*val_correct/val_total)
+        print("valid_loss:",val_epoch_loss/n_val)  
+       
 print("finished learning")
 PATH="C:/Users/wnsgm/Desktop/sEMG_final/weight/var_700.pth"
 torch.save(net.state_dict(),PATH)
 
 plt.plot(loss_)
-plt.title('Loss')
+plt.title('VAR_Loss')
 plt.xlabel('epoch')
 plt.show()
-
 
