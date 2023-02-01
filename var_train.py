@@ -106,7 +106,7 @@ optimizer = torch.optim.Adam(net.parameters(), lr=0.001)
 total_batch=len(train_loader)
 n=len(train_loader)
 loss_=[]
-for epoch in range(1,1000+1):
+for epoch in range(1,700+1):
     correct=0
     total=0
     running_loss=0.0
