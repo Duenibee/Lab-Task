@@ -101,6 +101,19 @@ net= NeuralNet().to(device)
 criterion=nn.CrossEntropyLoss().cuda()
 #optimizer= optim.SGD(net.parameters(),lr=0.001,momentum=0.9)
 optimizer = torch.optim.Adam(net.parameters(), lr=0.001)
+#scheduler
+def func(epoch):
+    if epoch < 50:
+        return 0.5
+    elif epoch < 200:
+        return 0.5 ** 2
+    elif epoch < 400:
+        return 0.5 ** 3
+    else:
+        return 0.5 ** 4
+
+scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda = func)
+
 n=len(train_loader)
 n_val=len(valid_loader)
 best_accuracy=98
@@ -128,7 +141,7 @@ for epoch in range(1,700+1):
         correct+=(predicted==labels).sum().item()
         running_loss+=loss.item()
     loss_.append(running_loss/n)  
-    
+    scheduler.step()
     # validation
     with torch.no_grad():
         net.eval()
