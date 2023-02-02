@@ -46,7 +46,7 @@ class CustomDataset(Dataset):
   # 인덱스를 입력받아 그에 맵핑되는 입출력 데이터를 파이토치의 Tensor 형태로 리턴
   def __getitem__(self,idx):
     temp=self.x_data[idx]
-    x = torch.FloatTensor(temp[:])*100
+    x = torch.FloatTensor(temp[:])
     # x= F.normalize(x,dim=0)
     y=int(self.y_data[idx])
     return x, y
