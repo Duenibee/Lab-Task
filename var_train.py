@@ -144,7 +144,8 @@ for epoch in range(1,700+1):
         correct+=(predicted==labels).sum().item()
         running_loss+=loss.item()
     loss_.append(running_loss/n)  
-    
+    scheduler.step()
+
     # validation
     with torch.no_grad():
         net.eval()
