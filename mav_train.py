@@ -119,7 +119,7 @@ n_val=len(valid_loader)
 best_accuracy=98
 loss_=[]
 val_loss_list=[]
-for epoch in range(1,700+1):
+for epoch in range(1,300+1):
     net.train()
     correct=0
     total=0
