@@ -50,7 +50,7 @@ class CustomDataset(Dataset):
   # 인덱스를 입력받아 그에 맵핑되는 입출력 데이터를 파이토치의 Tensor 형태로 리턴
   def __getitem__(self,idx):
     temp=self.x_data[idx]
-    x = torch.FloatTensor(temp[:])*100
+    x = torch.FloatTensor(temp[:])
     y=int(self.y_data[idx])
     return x, y
 # 데이터 불러오기
@@ -94,7 +94,6 @@ class NeuralNet(nn.Module):
         self.layer_3= nn.Linear(128, 64, bias=True)
         self.layer_out = nn.Linear(64, 17, bias=True)
         self.dropout = nn.Dropout(0.2)
-        self.relu = nn.ReLU()
         self.tanh=nn.Tanh()
         
     def forward(self, x):
