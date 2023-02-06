@@ -195,22 +195,7 @@ class sEMG_data_load:
     
     
     def real_dataset(self,train_set,test_set,label_train,label_test):
-        dic2=self.dic2 
-        for i in range(0,len(dic2)):
-            index_dic2=dic2[i]
-            
-            temp_train=train_set[index_dic2]
-            temp_test=test_set[index_dic2]
-            
-            temp_label_train=label_train[index_dic2]
-            temp_label_test=label_test[index_dic2]
-            
-            label_train[index_dic2]=temp_label_train[0:50]
-            label_test[index_dic2]=temp_label_test[0:30]
-            
-            train_set[index_dic2]=temp_train[0:50]
-            test_set[index_dic2]=temp_test[0:30]
-        
+        dic2=self.dic2         
         # 데이터 한 덩어리로 만들기
         real_train=train_set['L1']
         real_test=test_set['L1']
