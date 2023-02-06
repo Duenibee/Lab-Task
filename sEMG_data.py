@@ -214,7 +214,7 @@ class sEMG_data_load:
         return real_train,real_test,real_label_train,real_label_test
     
     def validtaion_dataset(self,test_set,test_label):
-        num=510
+        num=741
         valid_set=test_set[list(range(0,num,2))][:]
         valid_label_set=test_label[list(range(0,num,2))][:]
         test_set=test_set[list(range(1,num,2))][:]
