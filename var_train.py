@@ -103,12 +103,12 @@ criterion=nn.CrossEntropyLoss().cuda()
 #optimizer= optim.SGD(net.parameters(),lr=0.001,momentum=0.9)
 optimizer = torch.optim.Adam(net.parameters(), lr=0.001)
 #scheduler
-def func(epoch):
-    if epoch < 50:
+def func(epoch):    
+    if epoch < 100:
         return 0.5
-    elif epoch < 200:
+    elif epoch < 300:
         return 0.5 ** 2
-    elif epoch < 400:
+    elif epoch < 500:
         return 0.5 ** 3
     else:
         return 0.5 ** 4
@@ -122,7 +122,7 @@ loss_=[]
 val_loss_list=[]
 
 # 
-for epoch in range(1,300+1):
+for epoch in range(1,700+1):
     net.train()
     correct=0
     total=0
