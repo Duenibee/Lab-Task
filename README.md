@@ -1,5 +1,6 @@
-# sEMG
-<Lab Task>
+# <Lab Task>
+
+
 
   
 sEMG.mat --> sEMG, label, repetition 데이터
