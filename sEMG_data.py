@@ -8,7 +8,7 @@ Created on Fri Jan 13 16:25:38 2023
 import numpy as np
 import scipy
 
-mat_file_name="C:/Users/wnsgm/Desktop/sEMG/sEMG 5.mat"
+mat_file_name="./sEMG/sEMG 5.mat"
 mat_file= scipy.io.loadmat(mat_file_name)
 
 emg=mat_file['emg']
