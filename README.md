@@ -1,7 +1,7 @@
 # sEMG
+<Lab Task>
 
-<AIMS Lab 학부연구생 task>
-
+  
 sEMG.mat --> sEMG, label, repetition 데이터
 
 weight 폴더             --> 학습한 가중치 저장
